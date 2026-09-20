@@ -1,0 +1,230 @@
+-- Gemini Hub Key System & Loader UI
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Remove existing key UI if open
+if playerGui:FindFirstChild("GeminiKeySystem") then
+    playerGui.GeminiKeySystem:Destroy()
+end
+
+-- Table of valid keys (all 500 keys)
+local validKeys = {
+    ["GEMINI-7842-XK91"] = true, ["GEMINI-3910-PL44"] = true, ["GEMINI-6284-QW88"] = true, ["GEMINI-1593-ZX22"] = true, ["GEMINI-4720-MN55"] = true,
+    ["GEMINI-8319-TR77"] = true, ["GEMINI-2051-KJ33"] = true, ["GEMINI-9467-DF99"] = true, ["GEMINI-1182-VB66"] = true, ["GEMINI-5634-HG11"] = true,
+    ["GEMINI-7920-LK44"] = true, ["GEMINI-3048-PO77"] = true, ["GEMINI-6512-UY22"] = true, ["GEMINI-4291-ZX99"] = true, ["GEMINI-8873-RT11"] = true,
+    ["GEMINI-2345-AS66"] = true, ["GEMINI-9102-DF33"] = true, ["GEMINI-1456-GH88"] = true, ["GEMINI-5789-JK55"] = true, ["GEMINI-3210-ZX77"] = true,
+    ["GEMINI-6891-CV22"] = true, ["GEMINI-4123-BN99"] = true, ["GEMINI-8901-MN11"] = true, ["GEMINI-2346-LK66"] = true, ["GEMINI-7543-PO33"] = true,
+    ["GEMINI-1982-UY88"] = true, ["GEMINI-5432-TR55"] = true, ["GEMINI-3890-EQ77"] = true, ["GEMINI-6123-WS22"] = true, ["GEMINI-4567-ED99"] = true,
+    ["GEMINI-8923-RF11"] = true, ["GEMINI-2104-TG66"] = true, ["GEMINI-7321-YH33"] = true, ["GEMINI-9834-UJ88"] = true, ["GEMINI-1652-IK55"] = true,
+    ["GEMINI-5490-OL77"] = true, ["GEMINI-3781-AZ22"] = true, ["GEMINI-6245-SX99"] = true, ["GEMINI-4892-DC11"] = true, ["GEMINI-8109-FV66"] = true,
+    ["GEMINI-2943-GB33"] = true, ["GEMINI-7451-HN88"] = true, ["GEMINI-3209-JM55"] = true, ["GEMINI-6983-QP77"] = true, ["GEMINI-4152-WO22"] = true,
+    ["GEMINI-8631-EI99"] = true, ["GEMINI-2504-RU11"] = true, ["GEMINI-7189-TY66"] = true, ["GEMINI-3942-UI33"] = true, ["GEMINI-6531-OP88"] = true,
+    ["GEMINI-4820-AS55"] = true, ["GEMINI-9314-DF77"] = true, ["GEMINI-1756-GH22"] = true, ["GEMINI-5209-JK99"] = true, ["GEMINI-3812-LZ11"] = true,
+    ["GEMINI-6490-XC66"] = true, ["GEMINI-4125-VB33"] = true, ["GEMINI-8793-NM88"] = true, ["GEMINI-2341-QW55"] = true, ["GEMINI-7902-ER77"] = true,
+    ["GEMINI-3156-TY22"] = true, ["GEMINI-6841-UI99"] = true, ["GEMINI-4523-OP11"] = true, ["GEMINI-9012-AS66"] = true, ["GEMINI-1678-DF33"] = true,
+    ["GEMINI-5341-GH88"] = true, ["GEMINI-3892-JK55"] = true, ["GEMINI-7210-LZ77"] = true, ["GEMINI-4983-XC22"] = true, ["GEMINI-8621-VB99"] = true,
+    ["GEMINI-2094-NM11"] = true, ["GEMINI-7512-QW66"] = true, ["GEMINI-3341-ER33"] = true, ["GEMINI-6902-TY88"] = true, ["GEMINI-4183-UI55"] = true,
+    ["GEMINI-8541-OP77"] = true, ["GEMINI-2790-AS22"] = true, ["GEMINI-7231-DF99"] = true, ["GEMINI-3609-GH11"] = true, ["GEMINI-6145-JK66"] = true,
+    ["GEMINI-4892-LZ33"] = true, ["GEMINI-9310-XC88"] = true, ["GEMINI-1563-VB55"] = true, ["GEMINI-5094-NM77"] = true, ["GEMINI-3721-QW22"] = true,
+    ["GEMINI-6412-ER99"] = true, ["GEMINI-4209-TY11"] = true, ["GEMINI-8831-UI66"] = true, ["GEMINI-2956-OP33"] = true, ["GEMINI-7341-AS88"] = true,
+    ["GEMINI-3189-DF55"] = true, ["GEMINI-6652-GH77"] = true, ["GEMINI-4390-JK22"] = true, ["GEMINI-9041-LZ99"] = true, ["GEMINI-1823-XC11"] = true,
+    ["GEMINI-5412-VB66"] = true, ["GEMINI-3901-NM33"] = true, ["GEMINI-7623-QW88"] = true, ["GEMINI-4512-ER55"] = true, ["GEMINI-8190-TY77"] = true,
+    ["GEMINI-2234-UI22"] = true, ["GEMINI-6890-OP99"] = true, ["GEMINI-4123-AS11"] = true, ["GEMINI-8561-DF66"] = true, ["GEMINI-2745-GH33"] = true,
+    ["GEMINI-7390-JK88"] = true, ["GEMINI-3512-LZ55"] = true, ["GEMINI-6209-XC77"] = true, ["GEMINI-4831-VB22"] = true, ["GEMINI-9156-NM99"] = true,
+    ["GEMINI-1690-QW11"] = true, ["GEMINI-5321-ER66"] = true, ["GEMINI-3745-TY33"] = true, ["GEMINI-7982-UI88"] = true, ["GEMINI-4109-OP55"] = true,
+    ["GEMINI-8451-AS77"] = true, ["GEMINI-2902-DF22"] = true, ["GEMINI-7612-GH99"] = true, ["GEMINI-3345-JK11"] = true, ["GEMINI-6823-LZ66"] = true,
+    ["GEMINI-4590-XC33"] = true, ["GEMINI-9210-VB88"] = true, ["GEMINI-1841-NM55"] = true, ["GEMINI-5509-QW77"] = true, ["GEMINI-3123-ER22"] = true,
+    ["GEMINI-7456-TY99"] = true, ["GEMINI-4290-UI11"] = true, ["GEMINI-8931-OP66"] = true, ["GEMINI-2652-AS33"] = true, ["GEMINI-7189-DF88"] = true,
+    ["GEMINI-3810-GH55"] = true, ["GEMINI-6341-JK77"] = true, ["GEMINI-4902-LZ22"] = true, ["GEMINI-8512-XC99"] = true, ["GEMINI-2093-VB11"] = true,
+    ["GEMINI-7723-NM66"] = true, ["GEMINI-3451-QW33"] = true, ["GEMINI-6109-ER88"] = true, ["GEMINI-4782-TY55"] = true, ["GEMINI-9241-UI77"] = true,
+    ["GEMINI-1560-OP22"] = true, ["GEMINI-5390-AS99"] = true, ["GEMINI-3823-DF11"] = true, ["GEMINI-7412-GH66"] = true, ["GEMINI-4156-JK33"] = true,
+    ["GEMINI-8890-LZ88"] = true, ["GEMINI-2310-XC55"] = true, ["GEMINI-6945-VB77"] = true, ["GEMINI-4623-NM22"] = true, ["GEMINI-9109-QW99"] = true,
+    ["GEMINI-1782-ER11"] = true, ["GEMINI-5451-TY66"] = true, ["GEMINI-3209-UI33"] = true, ["GEMINI-7823-OP88"] = true, ["GEMINI-4345-AS55"] = true,
+    ["GEMINI-8690-DF77"] = true, ["GEMINI-2912-GH22"] = true, ["GEMINI-7509-JK99"] = true, ["GEMINI-3623-LZ11"] = true, ["GEMINI-6241-XC66"] = true,
+    ["GEMINI-4810-VB33"] = true, ["GEMINI-9356-NM88"] = true, ["GEMINI-1090-QW55"] = true, ["GEMINI-5723-ER77"] = true, ["GEMINI-3412-TY22"] = true,
+    ["GEMINI-7156-UI99"] = true, ["GEMINI-4909-OP11"] = true, ["GEMINI-8234-AS66"] = true, ["GEMINI-2589-DF33"] = true, ["GEMINI-6810-GH88"] = true,
+    ["GEMINI-4321-JK55"] = true, ["GEMINI-9056-LZ77"] = true, ["GEMINI-1712-XC22"] = true, ["GEMINI-5409-VB99"] = true, ["GEMINI-3982-NM11"] = true,
+    ["GEMINI-7645-QW66"] = true, ["GEMINI-4120-ER33"] = true, ["GEMINI-8731-TY88"] = true, ["GEMINI-2390-UI55"] = true, ["GEMINI-7012-OP77"] = true,
+    ["GEMINI-3563-AS22"] = true, ["GEMINI-6289-DF99"] = true, ["GEMINI-4410-GH11"] = true, ["GEMINI-9151-JK66"] = true, ["GEMINI-1820-LZ33"] = true,
+    ["GEMINI-5590-XC88"] = true, ["GEMINI-3120-VB55"] = true, ["GEMINI-7831-NM77"] = true, ["GEMINI-4652-QW22"] = true, ["GEMINI-8390-ER99"] = true,
+    ["GEMINI-2012-TY11"] = true, ["GEMINI-7245-UI66"] = true, ["GEMINI-3909-OP33"] = true, ["GEMINI-6510-AS88"] = true, ["GEMINI-4234-DF55"] = true,
+    ["GEMINI-8982-GH77"] = true, ["GEMINI-2712-JK22"] = true, ["GEMINI-7409-LZ99"] = true, ["GEMINI-3656-XC11"] = true, ["GEMINI-6120-VB66"] = true,
+    ["GEMINI-4890-NM33"] = true, ["GEMINI-9512-QW88"] = true, ["GEMINI-1341-ER55"] = true, ["GEMINI-5823-TY77"] = true, ["GEMINI-3202-UI22"] = true,
+    ["GEMINI-7945-OP99"] = true, ["GEMINI-4189-AS11"] = true, ["GEMINI-8610-DF66"] = true, ["GEMINI-2523-GH33"] = true, ["GEMINI-7109-JK88"] = true,
+    ["GEMINI-3956-LZ55"] = true, ["GEMINI-6431-XC77"] = true, ["GEMINI-4702-VB22"] = true, ["GEMINI-9289-NM99"] = true, ["GEMINI-1612-QW11"] = true,
+    ["GEMINI-5345-ER66"] = true, ["GEMINI-3090-TY33"] = true, ["GEMINI-7710-UI88"] = true, ["GEMINI-4456-OP55"] = true, ["GEMINI-8123-AS77"] = true,
+    ["GEMINI-2890-DF22"] = true, ["GEMINI-7351-GH99"] = true, ["GEMINI-3612-JK11"] = true, ["GEMINI-6909-LZ66"] = true, ["GEMINI-4202-XC33"] = true,
+    ["GEMINI-8845-VB88"] = true, ["GEMINI-2189-NM55"] = true, ["GEMINI-7523-QW77"] = true, ["GEMINI-3390-ER22"] = true, ["GEMINI-6156-TY99"] = true,
+    ["GEMINI-4910-UI11"] = true, ["GEMINI-8409-OP66"] = true, ["GEMINI-2751-AS33"] = true, ["GEMINI-7123-DF88"] = true, ["GEMINI-3845-GH55"] = true,
+    ["GEMINI-6590-JK77"] = true, ["GEMINI-4012-LZ22"] = true, ["GEMINI-8656-XC99"] = true, ["GEMINI-1909-VB11"] = true, ["GEMINI-5310-NM66"] = true,
+    ["GEMINI-3751-QW33"] = true, ["GEMINI-7489-ER88"] = true, ["GEMINI-4223-TY55"] = true, ["GEMINI-8912-UI77"] = true, ["GEMINI-2690-OP22"] = true,
+    ["GEMINI-7202-AS99"] = true, ["GEMINI-3545-DF11"] = true, ["GEMINI-6812-GH66"] = true, ["GEMINI-4390-JK33"] = true, ["GEMINI-9123-LZ88"] = true,
+    ["GEMINI-1856-XC55"] = true, ["GEMINI-5609-VB77"] = true, ["GEMINI-3151-NM22"] = true, ["GEMINI-7910-QW99"] = true, ["GEMINI-4482-ER11"] = true,
+    ["GEMINI-8345-TY66"] = true, ["GEMINI-2023-UI33"] = true, ["GEMINI-7709-OP88"] = true, ["GEMINI-3920-AS55"] = true, ["GEMINI-6451-DF77"] = true,
+    ["GEMINI-4712-GH22"] = true, ["GEMINI-9390-JK99"] = true, ["GEMINI-1234-LZ11"] = true, ["GEMINI-5890-XC66"] = true, ["GEMINI-3509-VB33"] = true,
+    ["GEMINI-8156-NM88"] = true, ["GEMINI-2810-QW55"] = true, ["GEMINI-7423-ER77"] = true, ["GEMINI-4190-TY22"] = true, ["GEMINI-8751-UI99"] = true,
+    ["GEMINI-2402-OP11"] = true, ["GEMINI-7090-AS66"] = true, ["GEMINI-3651-DF33"] = true, ["GEMINI-6323-GH88"] = true, ["GEMINI-4956-JK55"] = true,
+    ["GEMINI-9590-LZ77"] = true, ["GEMINI-1312-XC22"] = true, ["GEMINI-5023-VB99"] = true, ["GEMINI-3890-NM11"] = true, ["GEMINI-7609-QW66"] = true,
+    ["GEMINI-4251-ER33"] = true, ["GEMINI-8945-TY88"] = true, ["GEMINI-2120-UI55"] = true, ["GEMINI-7289-OP77"] = true, ["GEMINI-3402-AS22"] = true,
+    ["GEMINI-6151-DF99"] = true, ["GEMINI-4723-GH11"] = true, ["GEMINI-9312-JK66"] = true, ["GEMINI-1690-LZ33"] = true, ["GEMINI-5456-XC88"] = true,
+    ["GEMINI-3190-VB55"] = true, ["GEMINI-7923-NM77"] = true, ["GEMINI-4051-QW22"] = true, ["GEMINI-8812-ER99"] = true, ["GEMINI-2502-TY11"] = true,
+    ["GEMINI-7151-UI66"] = true, ["GEMINI-3723-OP33"] = true, ["GEMINI-6490-AS88"] = true, ["GEMINI-4312-DF55"] = true, ["GEMINI-9009-GH77"] = true,
+    ["GEMINI-1890-JK22"] = true, ["GEMINI-5623-LZ99"] = true, ["GEMINI-3251-XC11"] = true, ["GEMINI-7790-VB66"] = true, ["GEMINI-4502-NM33"] = true,
+    ["GEMINI-8251-QW88"] = true, ["GEMINI-2323-ER55"] = true, ["GEMINI-7056-TY77"] = true, ["GEMINI-3990-UI22"] = true, ["GEMINI-6612-OP99"] = true,
+    ["GEMINI-4102-AS11"] = true, ["GEMINI-8909-DF66"] = true, ["GEMINI-2451-GH33"] = true, ["GEMINI-7323-JK88"] = true, ["GEMINI-3690-LZ55"] = true,
+    ["GEMINI-6189-XC77"] = true, ["GEMINI-4802-VB22"] = true, ["GEMINI-9451-NM99"] = true, ["GEMINI-1123-QW11"] = true, ["GEMINI-5790-ER66"] = true,
+    ["GEMINI-3351-TY33"] = true, ["GEMINI-8023-UI88"] = true, ["GEMINI-2612-OP55"] = true, ["GEMINI-7290-AS77"] = true, ["GEMINI-3951-DF22"] = true,
+    ["GEMINI-6502-GH99"] = true, ["GEMINI-4289-JK11"] = true, ["GEMINI-8723-LZ66"] = true, ["GEMINI-2090-XC33"] = true, ["GEMINI-7651-VB88"] = true,
+    ["GEMINI-3123-NM55"] = true, ["GEMINI-6902-QW77"] = true, ["GEMINI-4556-ER22"] = true, ["GEMINI-9212-TY99"] = true, ["GEMINI-1523-UI11"] = true,
+    ["GEMINI-5390-OP66"] = true, ["GEMINI-3802-AS33"] = true, ["GEMINI-7451-DF88"] = true, ["GEMINI-4190-GH55"] = true, ["GEMINI-8823-JK77"] = true,
+    ["GEMINI-2351-LZ22"] = true, ["GEMINI-7102-XC99"] = true, ["GEMINI-3612-VB11"] = true, ["GEMINI-6390-NM66"] = true, ["GEMINI-4923-QW33"] = true,
+    ["GEMINI-9502-ER88"] = true, ["GEMINI-1290-TY55"] = true, ["GEMINI-5951-UI77"] = true, ["GEMINI-3423-OP22"] = true, ["GEMINI-8189-AS99"] = true,
+    ["GEMINI-2702-DF11"] = true, ["GEMINI-7312-GH66"] = true, ["GEMINI-3956-JK33"] = true, ["GEMINI-6623-LZ88"] = true, ["GEMINI-4090-XC55"] = true,
+    ["GEMINI-8709-VB77"] = true, ["GEMINI-2251-NM22"] = true, ["GEMINI-7023-QW99"] = true, ["GEMINI-3512-ER11"] = true, ["GEMINI-6289-TY66"] = true,
+    ["GEMINI-4812-UI33"] = true, ["GEMINI-9410-OP88"] = true, ["GEMINI-1623-AS55"] = true, ["GEMINI-5302-DF77"] = true, ["GEMINI-3190-GH22"] = true,
+    ["GEMINI-7951-JK99"] = true, ["GEMINI-4323-LZ11"] = true, ["GEMINI-8602-XC66"] = true, ["GEMINI-2151-VB33"] = true, ["GEMINI-7209-NM88"] = true,
+    ["GEMINI-3723-QW55"] = true, ["GEMINI-6412-ER77"] = true, ["GEMINI-4951-TY22"] = true, ["GEMINI-9123-UI99"] = true, ["GEMINI-1890-OP11"] = true,
+    ["GEMINI-5651-AS66"] = true, ["GEMINI-3302-DF33"] = true, ["GEMINI-7809-GH88"] = true, ["GEMINI-4023-JK55"] = true, ["GEMINI-8712-LZ77"] = true,
+    ["GEMINI-2490-XC22"] = true, ["GEMINI-7251-VB99"] = true, ["GEMINI-3623-NM11"] = true, ["GEMINI-6190-QW66"] = true, ["GEMINI-4751-ER33"] = true,
+    ["GEMINI-9302-TY88"] = true, ["GEMINI-1509-UI55"] = true, ["GEMINI-5123-OP77"] = true, ["GEMINI-3890-AS22"] = true, ["GEMINI-7551-DF99"] = true,
+    ["GEMINI-4223-GH11"] = true, ["GEMINI-8902-JK66"] = true, ["GEMINI-2051-LZ33"] = true, ["GEMINI-7690-XC88"] = true, ["GEMINI-3402-VB55"] = true,
+    ["GEMINI-6251-NM77"] = true, ["GEMINI-4923-QW22"] = true, ["GEMINI-9190-ER99"] = true, ["GEMINI-1702-TY11"] = true, ["GEMINI-5451-UI66"] = true,
+    ["GEMINI-3123-OP33"] = true, ["GEMINI-7812-AS88"] = true, ["GEMINI-4390-DF55"] = true, ["GEMINI-8509-GH77"] = true, ["GEMINI-2623-JK22"] = true,
+    ["GEMINI-7390-LZ99"] = true, ["GEMINI-3902-XC11"] = true, ["GEMINI-6651-VB66"] = true, ["GEMINI-4123-NM33"] = true, ["GEMINI-8802-QW88"] = true,
+    ["GEMINI-2290-ER55"] = true, ["GEMINI-7012-TY77"] = true, ["GEMINI-3551-UI22"] = true, ["GEMINI-6323-OP99"] = true, ["GEMINI-4790-AS11"] = true,
+    ["GEMINI-9251-DF66"] = true, ["GEMINI-1802-GH33"] = true, ["GEMINI-5523-JK88"] = true, ["GEMINI-3212-LZ55"] = true, ["GEMINI-7902-XC77"] = true,
+    ["GEMINI-4451-VB22"] = true, ["GEMINI-9109-NM99"] = true, ["GEMINI-1390-QW11"] = true, ["GEMINI-5812-ER66"] = true, ["GEMINI-3023-TY33"] = true,
+    ["GEMINI-7651-UI88"] = true, ["GEMINI-4190-OP55"] = true, ["GEMINI-8723-AS77"] = true, ["GEMINI-2551-DF22"] = true, ["GEMINI-7202-GH99"] = true,
+    ["GEMINI-3823-JK11"] = true, ["GEMINI-6409-LZ66"] = true, ["GEMINI-4956-XC33"] = true, ["GEMINI-9312-VB88"] = true, ["GEMINI-1651-NM55"] = true,
+    ["GEMINI-5290-QW77"] = true, ["GEMINI-3102-ER22"] = true, ["GEMINI-7851-TY99"] = true, ["GEMINI-4223-UI11"] = true, ["GEMINI-8990-OP66"] = true,
+    ["GEMINI-2409-AS33"] = true, ["GEMINI-7123-DF88"] = true, ["GEMINI-3651-GH55"] = true, ["GEMINI-6390-JK77"] = true, ["GEMINI-4802-LZ22"] = true,
+    ["GEMINI-9523-XC99"] = true, ["GEMINI-1902-VB11"] = true, ["GEMINI-5612-NM66"] = true, ["GEMINI-3290-QW33"] = true, ["GEMINI-7951-ER88"] = true,
+    ["GEMINI-4123-TY55"] = true, ["GEMINI-8609-UI77"] = true, ["GEMINI-2723-OP22"] = true, ["GEMINI-7312-AS99"] = true, ["GEMINI-3551-DF11"] = true,
+    ["GEMINI-6102-GH66"] = true, ["GEMINI-4490-JK33"] = true, ["GEMINI-9151-LZ88"] = true, ["GEMINI-1823-XC55"] = true, ["GEMINI-5402-VB77"] = true,
+    ["GEMINI-3090-NM22"] = true, ["GEMINI-7751-QW99"] = true, ["GEMINI-4223-ER11"] = true, ["GEMINI-8823-TY66"] = true, ["GEMINI-2102-UI33"] = true,
+    ["GEMINI-7009-OP88"] = true, ["GEMINI-3651-AS55"] = true, ["GEMINI-6423-DF77"] = true, ["GEMINI-4890-GH22"] = true, ["GEMINI-9512-JK99"] = true,
+    ["GEMINI-1351-LZ11"] = true, ["GEMINI-5902-XC66"] = true, ["GEMINI-3223-VB33"] = true, ["GEMINI-7812-NM88"] = true, ["GEMINI-4190-QW55"] = true,
+    ["GEMINI-8651-ER77"] = true, ["GEMINI-2402-TY22"] = true, ["GEMINI-7290-UI99"] = true, ["GEMINI-3551-OP11"] = true, ["GEMINI-6123-AS66"] = true,
+    ["GEMINI-4802-DF33"] = true, ["GEMINI-9302-GH88"] = true, ["GEMINI-1723-JK55"] = true, ["GEMINI-5451-LZ77"] = true, ["GEMINI-3190-XC22"] = true,
+    ["GEMINI-7912-VB99"] = true, ["GEMINI-4051-NM11"] = true, ["GEMINI-8702-QW66"] = true, ["GEMINI-2551-ER33"] = true, ["GEMINI-7209-TY88"] = true,
+    ["GEMINI-3823-UI55"] = true, ["GEMINI-6451-OP77"] = true, ["GEMINI-4312-AS22"] = true, ["GEMINI-9023-DF99"] = true, ["GEMINI-1990-GH11"] = true,
+    ["GEMINI-5612-JK66"] = true, ["GEMINI-3351-LZ33"] = true, ["GEMINI-7823-XC88"] = true, ["GEMINI-4102-VB55"] = true, ["GEMINI-8851-NM77"] = true,
+    ["GEMINI-2202-QW22"] = true, ["GEMINI-7123-ER99"] = true, ["GEMINI-3690-TY11"] = true, ["GEMINI-6302-UI66"] = true, ["GEMINI-4951-OP33"] = true,
+    ["GEMINI-9423-AS88"] = true, ["GEMINI-1409-DF55"] = true, ["GEMINI-5851-GH77"] = true, ["GEMINI-3223-JK22"] = true, ["GEMINI-7702-LZ99"] = true,
+    ["GEMINI-4512-XC11"] = true, ["GEMINI-9190-VB66"] = true, ["GEMINI-2051-NM33"] = true, ["GEMINI-7323-QW88"] = true, ["GEMINI-3802-ER55"] = true,
+    ["GEMINI-6551-TY77"] = true, ["GEMINI-4123-UI22"] = true, ["GEMINI-8902-OP99"] = true, ["GEMINI-2690-AS11"] = true, ["GEMINI-7412-DF66"] = true,
+    ["GEMINI-3551-GH33"] = true, ["GEMINI-6223-JK88"] = true, ["GEMINI-4802-LZ55"] = true, ["GEMINI-9351-XC77"] = true, ["GEMINI-1702-VB22"] = true,
+    ["GEMINI-5423-NM99"] = true, ["GEMINI-3190-QW11"] = true, ["GEMINI-7902-ER66"] = true, ["GEMINI-4051-TY33"] = true, ["GEMINI-8612-UI88"] = true,
+    ["GEMINI-2451-OP55"] = true, ["GEMINI-7190-AS77"] = true, ["GEMINI-3623-DF22"] = true, ["GEMINI-6351-GH99"] = true, ["GEMINI-4902-JK11"] = true,
+    ["GEMINI-9523-LZ66"] = true, ["GEMINI-1302-XC33"] = true, ["GEMINI-5809-VB88"] = true, ["GEMINI-3251-NM55"] = true, ["GEMINI-7723-QW77"] = true,
+    ["GEMINI-4123-ER22"] = true, ["GEMINI-8812-TY99"] = true, ["GEMINI-2290-UI11"] = true, ["GEMINI-7051-OP66"] = true, ["GEMINI-3502-AS33"] = true,
+    ["GEMINI-6209-DF88"] = true, ["GEMINI-4851-GH55"] = true, ["GEMINI-9402-JK77"] = true, ["GEMINI-1623-LZ22"] = true, ["GEMINI-5312-XC99"] = true,
+    ["GEMINI-3190-VB11"] = true
+}
+
+-- ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GeminiKeySystem"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Main Key UI Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 380, 0, 220)
+frame.Position = UDim2.new(0.5, -190, 0.5, -110)
+frame.BackgroundColor3 = Color3.fromRGB(24, 22, 33)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = frame
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(115, 75, 200)
+stroke.Thickness = 1.5
+stroke.Parent = frame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 45)
+title.Position = UDim2.new(0, 0, 0, 15)
+title.BackgroundTransparency = 1
+title.Text = "GEMINI HUB - KEY SYSTEM"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 14
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
+
+-- Key Input Box
+local textBox = Instance.new("TextBox")
+textBox.Size = UDim2.new(1, -40, 0, 40)
+textBox.Position = UDim2.new(0, 20, 0, 65)
+textBox.BackgroundColor3 = Color3.fromRGB(35, 31, 46)
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.PlaceholderText = "Paste your key here..."
+textBox.TextSize = 12
+textBox.Font = Enum.Font.GothamMedium
+textBox.ClearTextOnFocus = false
+textBox.Parent = frame
+
+local boxCorner = Instance.new("UICorner")
+boxCorner.CornerRadius = UDim.new(0, 6)
+boxCorner.Parent = textBox
+
+-- Verify Button
+local verifyBtn = Instance.new("TextButton")
+verifyBtn.Size = UDim2.new(1, -40, 0, 40)
+verifyBtn.Position = UDim2.new(0, 20, 0, 115)
+verifyBtn.BackgroundColor3 = Color3.fromRGB(115, 75, 200)
+verifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+verifyBtn.Text = "VERIFY KEY"
+verifyBtn.TextSize = 12
+verifyBtn.Font = Enum.Font.GothamBold
+verifyBtn.Parent = frame
+
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0, 6)
+btnCorner.Parent = verifyBtn
+
+-- Status Text
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 0, 25)
+statusLabel.Position = UDim2.new(0, 0, 0, 165)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Enter a valid key to continue."
+statusLabel.TextColor3 = Color3.fromRGB(150, 150, 160)
+statusLabel.TextSize = 11
+statusLabel.Font = Enum.Font.GothamMedium
+statusLabel.Parent = frame
+
+-- Button Logic
+verifyBtn.MouseButton1Click:Connect(function()
+    local enteredKey = textBox.Text
+    
+    if validKeys[enteredKey] then
+        statusLabel.TextColor3 = Color3.fromRGB(119, 153, 0)
+        statusLabel.Text = "Key Verified! Loading Hub..."
+        
+        -- Save key to global variable so the hub picks it up
+        _G.GeminiHubKey = enteredKey
+        
+        -- Wait a moment and close key system, then run main hub script
+        task.wait(0.8)
+        screenGui:Destroy()
+        
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Bruh1Script/gemini-hub/main/Origional%20Script%20(Use%20for%20updates)"))()
+        end)
+        
+        if not success then
+            warn("Failed to load main hub: " .. tostring(err))
+        end
+    else
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        statusLabel.Text = "Invalid Key! Please try again."
+    end
+end)
